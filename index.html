@@ -528,7 +528,7 @@ html[data-theme=gameboy].vt{font-size:21px}
 <div class="dex-top">
   <div class="dex-row">
     <div class="lens" aria-hidden="true"></div>
-    <h1>Pokédex<span class="ver">Yellow · v18.0</span></h1>
+    <h1>Pokédex<span class="ver">Yellow · v19.0</span></h1>
     <div class="meter" id="meter" aria-label="Overall completion">0%</div>
   </div>
 </div>
@@ -1236,10 +1236,20 @@ function applySave(sv){
   save();
   return {dex,ticks};
 }
+// One file picker that stays on the page: iPhone Safari (especially home-screen apps) can drop a
+// picker that isn't attached to the page while you're choosing a file, so nothing would happen.
+let saveInput=null;
+const readBuf=f=>f.arrayBuffer?f.arrayBuffer():new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(fr.result);fr.onerror=()=>no(fr.error);fr.readAsArrayBuffer(f)});
 function importSave(){
-  const inp=document.createElement('input'); inp.type='file';
-  inp.onchange=async()=>{const f=inp.files[0];if(!f)return;
-    try{const sv=parseSave(await f.arrayBuffer());const r=applySave(sv);
+  if(!saveInput){saveInput=document.createElement('input');saveInput.type='file';saveInput.setAttribute('aria-hidden','true');saveInput.tabIndex=-1;
+    saveInput.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';document.body.appendChild(saveInput);
+    saveInput.addEventListener('change',()=>{const f=saveInput.files&&saveInput.files[0];if(f)loadSaveFile(f)})}
+  saveInput.value='';   // so picking the same file again still counts as a change
+  saveInput.click();
+}
+async function loadSaveFile(f){
+  toast(`Reading ${f.name||'your save'}…`);
+  try{const sv=parseSave(await readBuf(f));const r=applySave(sv);
       const msg=[`Synced ${sv.trainer?sv.trainer+'’s':'your'} save: ${sv.owned.length} caught, ${sv.mons.length} Pokémon`];
       if(r.dex)msg.push(`${r.dex} new in the Pokédex`); if(r.ticks)msg.push(`${r.ticks} checklist items ticked`);
       if(!sv.yellow)msg.push('(this looks like a Red/Blue save)');
@@ -1249,8 +1259,7 @@ function importSave(){
       const missed=WARN.filter(w=>warnState(w).s==='lost');
       if(missed.length)msg.push(`missed for good: ${missed.map(w=>w.t.split(':')[0]).join(', ')}`);
       toast(msg.join(' · ')+'.'); if(sv.warn.length)setTimeout(()=>alert(sv.warn.join('\n')),300);
-    }catch(e){alert(e.message||'That file could not be read as a Pokémon save.')}};
-  inp.click();
+    }catch(e){alert(e.message||'That file could not be read as a Pokémon save.')}
 }
 
 /* ============================================================
