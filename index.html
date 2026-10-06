@@ -392,6 +392,10 @@ h2.sec,.sheet h3{color:var(--head);text-transform:uppercase;letter-spacing:.06em
 .sheet .close{border-color:currentColor;color:var(--shell-ink);opacity:.9}
 .sheet .body{padding:12px 14px 24px}
 .sheet .body>.dexbar{top:-12px;margin-top:-12px;padding-top:12px;z-index:3}
+.sheet .body>.dexbar{flex-wrap:wrap}
+.dexbar .chip.grp{margin-left:auto}
+.dexbar .chip.grp::before{content:'⌖ '}
+.sheet h3 .maplink{float:right;font-size:.8rem;text-transform:none;letter-spacing:0;margin:0}
 .sheet .row{background:var(--surface)}
 .sheet .row.got{background:var(--got)}
 .evo button,.tms span,.moves span,.cmpmv span,.sgl>div{color:var(--text)}
@@ -529,7 +533,7 @@ html[data-theme=gameboy].vt{font-size:21px}
 <div class="dex-top">
   <div class="dex-row">
     <div class="lens" aria-hidden="true"></div>
-    <h1>Pokédex<span class="ver">Yellow · v21.0</span></h1>
+    <h1>Pokédex<span class="ver">Yellow · v22.0</span></h1>
     <div class="meter" id="meter" aria-label="Overall completion">0%</div>
   </div>
 </div>
@@ -1722,22 +1726,45 @@ function itemWhere(loc,n){const key=loc+'|'+n;if(key in whereCache)return whereC
     else if(hid.length)w='Hidden '+where(hid)+': face the spot and press A'}
   return whereCache[key]=w}
 let itemFilter='all';
+let itemByLoc=false;   // group by place instead of by category
+// places in the order the story takes you there; places the story never names (Route 1,
+// Lavender Town…) slot in right after the neighbouring place you reach first
+let _storyRanks=null;
+function storyRank(l){
+  if(!_storyRanks){const R={},adj={};
+    EDGES.forEach(([a,b])=>{(adj[a]||=[]).push(b);(adj[b]||=[]).push(a)});
+    LOCS.forEach(x=>{const i=STORY.findIndex(st=>st.at===x.id);if(i>=0)R[x.id]=i});
+    // optional areas (Power Plant, Cerulean Cave…): when their side quest unlocks
+    SIDE.forEach(q=>{if(q.at in R)return;const i=STORY.findIndex(st=>st.id===q.after);if(i>=0)R[q.at]=i+.5});
+    for(let pass=0;pass<6;pass++)LOCS.forEach(x=>{if(x.id in R)return;const n=(adj[x.id]||[]).filter(y=>y in R).map(y=>R[y]);if(n.length)R[x.id]=Math.min(...n)+.5});
+    _storyRanks=R}
+  return l.id in _storyRanks?_storyRanks[l.id]:999+LOCS.indexOf(l)}
 function openItemList(){
   const rows=[];LOCS.forEach(l=>l.i.forEach(n=>rows.push({l,n,k:dk(l.id,'i',n)})));
   const b=sheetOpen('Items, TMs and key items'); const keep=b.scrollTop;
   const bar=document.createElement('div');bar.className='dexbar';
-  [['all','All'],['need','Still to get'],['got','Acquired']].forEach(([k,t])=>{const c=document.createElement('button');c.className='chip';c.textContent=t;
-    c.setAttribute('aria-pressed',String(itemFilter===k));c.onclick=()=>{itemFilter=k;openItemList();sBody.scrollTop=0};bar.appendChild(c)});
+  const chip=(t,on,fn)=>{const c=document.createElement('button');c.className='chip';c.textContent=t;c.setAttribute('aria-pressed',String(on));
+    c.onclick=()=>{fn();openItemList();sBody.scrollTop=0};bar.appendChild(c);return c};
+  [['all','All'],['need','Still to get'],['got','Acquired']].forEach(([k,t])=>chip(t,itemFilter===k,()=>{itemFilter=k}));
+  chip('Location',itemByLoc,()=>{itemByLoc=!itemByLoc}).classList.add('grp');
   b.appendChild(bar);
+  const pass=r=>itemFilter==='all'||(itemFilter==='got')===!!S.done[r.k];
+  const groups=itemByLoc
+    ? LOCS.filter(l=>l.i.length).sort((a,b)=>storyRank(a)-storyRank(b)).map(l=>({title:l.name,loc:l,all:rows.filter(r=>r.l===l).sort((a,b)=>itemSort(a.n,b.n))}))
+    : ITEM_CATS.map(([c,title])=>({title,all:rows.filter(r=>itemCat(r.n).cat===c).sort((a,b)=>itemSort(a.n,b.n)||LOCS.indexOf(a.l)-LOCS.indexOf(b.l))}));
   let shown=0;
-  ITEM_CATS.forEach(([c,title])=>{
-    const all=rows.filter(r=>itemCat(r.n).cat===c).sort((a,b)=>itemSort(a.n,b.n)||LOCS.indexOf(a.l)-LOCS.indexOf(b.l));
-    if(!all.length)return;
-    const list=all.filter(r=>itemFilter==='all'||(itemFilter==='got')===!!S.done[r.k]);
-    if(!list.length)return;
-    const h=document.createElement('h3');h.textContent=`${title} · ${all.filter(r=>S.done[r.k]).length} / ${all.length}`;b.appendChild(h);
-    list.forEach(r=>{shown++;const wh=itemWhere(r.l.id,r.n);const row=tickRow(r.n,!!S.done[r.k],()=>{S.done[r.k]=!S.done[r.k];save();openItemList()},`<br><button class="link loc">${r.l.name}</button>${wh?`<small class="loc"> · ${wh}</small>`:''}`);
-      row.querySelector('.loc').onclick=()=>{tab('map');focusLoc(r.l.id);openLoc(r.l.id)};b.appendChild(row)})});
+  groups.forEach(g=>{
+    const list=g.all.filter(pass);if(!list.length)return;
+    const h=document.createElement('h3');h.textContent=`${g.title} · ${g.all.filter(r=>S.done[r.k]).length} / ${g.all.length}`;
+    if(g.loc){const a=document.createElement('button');a.className='link maplink';a.textContent='Map ›';a.onclick=()=>{tab('map');focusLoc(g.loc.id);openLoc(g.loc.id)};h.appendChild(a)}
+    b.appendChild(h);
+    list.forEach(r=>{shown++;const wh=itemWhere(r.l.id,r.n);
+      // by location: say what kind of item it is; by category: say where it is
+      const sub=itemByLoc?[CAT_ONE[itemCat(r.n).cat],wh].filter(Boolean).join(' · ')
+        :`<button class="link loc">${r.l.name}</button>${wh?`<small class="loc"> · ${wh}</small>`:''}`;
+      const row=tickRow(r.n,!!S.done[r.k],()=>{S.done[r.k]=!S.done[r.k];save();openItemList()},itemByLoc?(sub?`<br><small class="loc">${sub}</small>`:''):`<br>${sub}`);
+      const lk=row.querySelector('button.loc');if(lk)lk.onclick=()=>{tab('map');focusLoc(r.l.id);openLoc(r.l.id)};
+      b.appendChild(row)})});
   if(!shown){const p=document.createElement('p');p.className='empty';p.textContent=itemFilter==='got'?'None yet.':'All done!';b.appendChild(p)}
   b.scrollTop=keep;
 }
