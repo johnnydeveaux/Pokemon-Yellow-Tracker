@@ -529,7 +529,7 @@ html[data-theme=gameboy].vt{font-size:21px}
 <div class="dex-top">
   <div class="dex-row">
     <div class="lens" aria-hidden="true"></div>
-    <h1>Pokédex<span class="ver">Yellow · v20.0</span></h1>
+    <h1>Pokédex<span class="ver">Yellow · v21.0</span></h1>
     <div class="meter" id="meter" aria-label="Overall completion">0%</div>
   </div>
 </div>
@@ -972,7 +972,7 @@ function openLoc(id){
     return r};
   sec('Wild Pokémon',l.w,mon);
   if(l.s.length)sec('Gift, static and prize Pokémon',l.s,mon);
-  sec('Items, TMs and key items',[...l.i].sort(itemSort),n=>{const k=dk(id,'i',n);return tickRow(n,!!S.done[k],()=>{S.done[k]=!S.done[k];save();openLoc(id)},CAT_ONE[itemCat(n).cat]?`<br><small class="loc">${CAT_ONE[itemCat(n).cat]}</small>`:'')});
+  sec('Items, TMs and key items',[...l.i].sort(itemSort),n=>{const k=dk(id,'i',n);return tickRow(n,!!S.done[k],()=>{S.done[k]=!S.done[k];save();openLoc(id)},(t=>t?`<br><small class="loc">${t}</small>`:'')([CAT_ONE[itemCat(n).cat],itemWhere(id,n)].filter(Boolean).join(' · ')))});
   if(l.b.length)sec('Badges and key battles',l.b,n=>{const k=dk(id,'b',n);return tickRow(n,!!S.done[k],()=>{S.done[k]=!S.done[k];save();openLoc(id)})});
   sBody.scrollTop=keep;
   drawMap();
@@ -1686,6 +1686,41 @@ const CAT_IDX=Object.fromEntries(ITEM_CATS.map(([c],i)=>[c,i]));
 const CAT_ONE={tm:'TM',hm:'HM',ball:'Poké Ball',med:'Medicine',boost:'Vitamin',stone:'Evolution stone',key:'Key item'};  // label on place pages
 // sort items: category, then the order inside it, then name
 const itemSort=(a,b)=>{const x=itemCat(a),y=itemCat(b);return CAT_IDX[x.cat]-CAT_IDX[y.cat]||x.rank-y.rank||a.localeCompare(b)};
+/* Where exactly each item is. Gifts and prizes are written by hand (checked against the
+   pokeyellow scripts); items lying on the floor are looked up in the place maps. */
+const ITEM_WHERE={
+  "pallet|Pokédex":"From Prof. Oak in his lab, for delivering his parcel","pallet|Town Map":"From Daisy in your rival's house",
+  "r1|Potion (clerk)":"Free sample from the Poké Mart clerk on the route","viridian|Oak's Parcel":"From the Poké Mart clerk",
+  "viridian|TM42 Dream Eater":"Sleepy fisherman west of town, past the tree you Cut","viridian|TM27 Fissure":"Giovanni, for beating the Viridian Gym",
+  "r2|HM05 Flash":"Oak's aide in the Route 2 gate (catch 10 kinds first)","pewter|TM34 Bide":"Brock, for beating the Pewter Gym",
+  "pewter|Old Amber":"Scientist in the Museum's back room (side door, Cut the tree)","mtmoon|Dome/Helix Fossil":"B2F, after beating the Super Nerd: you pick one",
+  "cerulean|TM11 BubbleBeam":"Misty, for beating the Cerulean Gym","cerulean|TM28 Dig":"Beat the Rocket behind the robbed house",
+  "cerulean|Bicycle":"Bike Shop: trade in the Bike Voucher","r24|Nugget":"Rocket at the end of Nugget Bridge, after 5 trainers",
+  "r25|S.S. Ticket":"From Bill at his cottage","saffron|Master Ball":"Silph Co. 11F: the president, after you beat Giovanni",
+  "saffron|TM46 Psywave":"Sabrina, for beating the Saffron Gym","saffron|TM29 Psychic":"Mr. Psychic's house",
+  "vermilion|TM24 Thunderbolt":"Lt. Surge, for beating the Vermilion Gym","vermilion|Bike Voucher":"Pokémon Fan Club chairman (hear his story)",
+  "vermilion|Old Rod":"Fishing Guru's house","ssanne|HM01 Cut":"Captain's cabin: rub the Captain's back",
+  "r11|Itemfinder":"Oak's aide upstairs in the Route 11 gate (30 kinds)","r12|Super Rod":"Fishing Guru's house on the route",
+  "lavender|Poké Flute":"Mr. Fuji's house, after rescuing him from Pokémon Tower","celadon|TM21 Mega Drain":"Erika, for beating the Celadon Gym",
+  "celadon|TM13 Ice Beam":"Dept. Store roof: give the girl Fresh Water","celadon|TM48 Rock Slide":"Dept. Store roof: give the girl Soda Pop",
+  "celadon|TM49 Tri Attack":"Dept. Store roof: give the girl Lemonade","celadon|Coin Case":"Man in the Celadon Diner",
+  "r16|HM02 Fly":"Girl in the house on the route (Cut the tree to reach it)","fuchsia|TM06 Toxic":"Koga, for beating the Fuchsia Gym",
+  "fuchsia|Good Rod":"Fishing Guru's house","safari|HM03 Surf":"Secret House in the West area",
+  "safari|HM04 Strength":"Warden's house in Fuchsia: bring him the Gold Teeth","r15|Exp. All":"Oak's aide upstairs in the Route 15 gate (50 kinds)",
+  "cinnabar|TM38 Fire Blast":"Blaine, for beating the Cinnabar Gym","r5|Day Care":"Day Care house: leave a Pokémon to level up"};
+const whereCache={};
+function itemWhere(loc,n){const key=loc+'|'+n;if(key in whereCache)return whereCache[key];
+  let w=ITEM_WHERE[key]||'';
+  if(!w){const norm=t=>t.toLowerCase().replace(/[^a-z0-9]/g,''), nm=norm(n.replace(/\s*\(.*\)$/,'')), seen=[], hid=[];
+    (LMBYLOC[loc]||[]).forEach(i=>{const m=LM[i], label=lmShort(m,loc);
+      if(m.o.some(o=>o[2]==='i'&&norm(o[3])===nm)&&!seen.includes(label))seen.push(label);
+      if((m.hi||[]).some(h=>norm(h[2])===nm)&&!hid.includes(label))hid.push(label)});
+    // "1F" -> "on 1F", "1F Rooms" -> "in the 1F rooms", "West" -> "in the West area"
+    const at=l=>/^B?\d+F$/.test(l)?'on '+l:/ Rooms$/.test(l)?'in the '+l.replace(' Rooms',' rooms'):/^(North|South|East|West|Center)$/.test(l)?`in the ${l} area`:'in '+l;
+    const where=ls=>{const sub=ls.filter(l=>l!==byId[loc].name);return sub.length?sub.map(at).join(' / ').replace(/ \/ (on|in) /g,' / '):(byId[loc].t==='route'?'on the route':'in the area')};
+    if(seen.length)w='Item ball '+where(seen);
+    else if(hid.length)w='Hidden '+where(hid)+': face the spot and press A'}
+  return whereCache[key]=w}
 let itemFilter='all';
 function openItemList(){
   const rows=[];LOCS.forEach(l=>l.i.forEach(n=>rows.push({l,n,k:dk(l.id,'i',n)})));
@@ -1701,7 +1736,7 @@ function openItemList(){
     const list=all.filter(r=>itemFilter==='all'||(itemFilter==='got')===!!S.done[r.k]);
     if(!list.length)return;
     const h=document.createElement('h3');h.textContent=`${title} · ${all.filter(r=>S.done[r.k]).length} / ${all.length}`;b.appendChild(h);
-    list.forEach(r=>{shown++;const row=tickRow(r.n,!!S.done[r.k],()=>{S.done[r.k]=!S.done[r.k];save();openItemList()},`<br><button class="link loc">${r.l.name}</button>`);
+    list.forEach(r=>{shown++;const wh=itemWhere(r.l.id,r.n);const row=tickRow(r.n,!!S.done[r.k],()=>{S.done[r.k]=!S.done[r.k];save();openItemList()},`<br><button class="link loc">${r.l.name}</button>${wh?`<small class="loc"> · ${wh}</small>`:''}`);
       row.querySelector('.loc').onclick=()=>{tab('map');focusLoc(r.l.id);openLoc(r.l.id)};b.appendChild(row)})});
   if(!shown){const p=document.createElement('p');p.className='empty';p.textContent=itemFilter==='got'?'None yet.':'All done!';b.appendChild(p)}
   b.scrollTop=keep;
