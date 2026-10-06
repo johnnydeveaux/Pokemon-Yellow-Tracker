@@ -533,7 +533,7 @@ html[data-theme=gameboy].vt{font-size:21px}
 <div class="dex-top">
   <div class="dex-row">
     <div class="lens" aria-hidden="true"></div>
-    <h1>Pokédex<span class="ver">Yellow · v22.0</span></h1>
+    <h1>Pokédex<span class="ver">Yellow · v23.0</span></h1>
     <div class="meter" id="meter" aria-label="Overall completion">0%</div>
   </div>
 </div>
@@ -975,7 +975,8 @@ function openLoc(id){
     r.querySelector('.nm').onclick=()=>openDex(dexNo(n),()=>openLoc(id));
     return r};
   sec('Wild Pokémon',l.w,mon);
-  if(l.s.length)sec('Gift, static and prize Pokémon',l.s,mon);
+  if(l.s.length)sec('Gift, static and prize Pokémon',l.s,n=>{const r=mon(n),h=MON_WHERE[id+'|'+n];
+    if(h)r.querySelector('.name').insertAdjacentHTML('beforeend',`<br><small class="loc">${h}</small>`);return r});
   sec('Items, TMs and key items',[...l.i].sort(itemSort),n=>{const k=dk(id,'i',n);return tickRow(n,!!S.done[k],()=>{S.done[k]=!S.done[k];save();openLoc(id)},(t=>t?`<br><small class="loc">${t}</small>`:'')([CAT_ONE[itemCat(n).cat],itemWhere(id,n)].filter(Boolean).join(' · ')))});
   if(l.b.length)sec('Badges and key battles',l.b,n=>{const k=dk(id,'b',n);return tickRow(n,!!S.done[k],()=>{S.done[k]=!S.done[k];save();openLoc(id)})});
   sBody.scrollTop=keep;
@@ -1712,6 +1713,21 @@ const ITEM_WHERE={
   "fuchsia|Good Rod":"Fishing Guru's house","safari|HM03 Surf":"Secret House in the West area",
   "safari|HM04 Strength":"Warden's house in Fuchsia: bring him the Gold Teeth","r15|Exp. All":"Oak's aide upstairs in the Route 15 gate (50 kinds)",
   "cinnabar|TM38 Fire Blast":"Blaine, for beating the Cinnabar Gym","r5|Day Care":"Day Care house: leave a Pokémon to level up"};
+// Who gives (or where to find) each gift, static and prize Pokémon (checked against the pokeyellow scripts)
+const MON_WHERE={
+  "pallet|Pikachu":"Your starter, from Prof. Oak","r4|Magikarp":"Salesman in the Pokémon Center by Mt. Moon: ₽500",
+  "cerulean|Bulbasaur":"Melanie's house: she gives it once Pikachu likes you enough","r24|Charmander":"Trainer at the north end of Nugget Bridge (Route 24)",
+  "vermilion|Squirtle":"Officer Jenny, once you have the Thunder Badge","saffron|Lapras":"Silph Co. 7F: an employee gives it to you",
+  "saffron|Hitmonlee":"Fighting Dojo: beat the Karate Master, then pick one","saffron|Hitmonchan":"Fighting Dojo: beat the Karate Master, then pick one",
+  "celadon|Eevee":"Celadon Mansion roof house (back stairs to the roof)","celadon|Abra":"Game Corner prize: 230 coins",
+  "celadon|Vulpix":"Game Corner prize: 1,000 coins","celadon|Wigglytuff":"Game Corner prize: 2,680 coins",
+  "celadon|Scyther":"Game Corner prize: 6,500 coins","celadon|Pinsir":"Game Corner prize: 6,500 coins","celadon|Porygon":"Game Corner prize: 9,999 coins",
+  "mtmoon|Omanyte":"Helix Fossil from B2F: revive it at the Cinnabar Lab","mtmoon|Kabuto":"Dome Fossil from B2F: revive it at the Cinnabar Lab",
+  "pewter|Aerodactyl":"Old Amber from the Museum: revive it at the Cinnabar Lab",
+  "cinnabar|Omanyte":"Cinnabar Lab: revives the Helix Fossil","cinnabar|Kabuto":"Cinnabar Lab: revives the Dome Fossil","cinnabar|Aerodactyl":"Cinnabar Lab: revives the Old Amber",
+  "r12|Snorlax":"Asleep on the route: wake it with the Poké Flute (Lv 30)","r16|Snorlax":"Asleep on the route: wake it with the Poké Flute (Lv 30)",
+  "power|Zapdos":"Deep inside the Power Plant (Lv 50, only one)","seafoam|Articuno":"Seafoam Islands B4F (Lv 50, only one)",
+  "victory|Moltres":"Victory Road 2F (Lv 50, only one)","ccave|Mewtwo":"Cerulean Cave B1F, after the Hall of Fame (Lv 70)"};
 const whereCache={};
 function itemWhere(loc,n){const key=loc+'|'+n;if(key in whereCache)return whereCache[key];
   let w=ITEM_WHERE[key]||'';
