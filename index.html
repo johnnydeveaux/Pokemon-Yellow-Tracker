@@ -391,6 +391,7 @@ h2.sec,.sheet h3{color:var(--head);text-transform:uppercase;letter-spacing:.06em
 .sheet h2{color:var(--shell-ink);font-size:1.1rem;text-transform:uppercase;letter-spacing:.04em}
 .sheet .close{border-color:currentColor;color:var(--shell-ink);opacity:.9}
 .sheet .body{padding:12px 14px 24px}
+.sheet .body>.dexbar{top:-12px;margin-top:-12px;padding-top:12px;z-index:3}
 .sheet .row{background:var(--surface)}
 .sheet .row.got{background:var(--got)}
 .evo button,.tms span,.moves span,.cmpmv span,.sgl>div{color:var(--text)}
@@ -528,7 +529,7 @@ html[data-theme=gameboy].vt{font-size:21px}
 <div class="dex-top">
   <div class="dex-row">
     <div class="lens" aria-hidden="true"></div>
-    <h1>Pokédex<span class="ver">Yellow · v19.0</span></h1>
+    <h1>Pokédex<span class="ver">Yellow · v20.0</span></h1>
     <div class="meter" id="meter" aria-label="Overall completion">0%</div>
   </div>
 </div>
@@ -971,7 +972,7 @@ function openLoc(id){
     return r};
   sec('Wild Pokémon',l.w,mon);
   if(l.s.length)sec('Gift, static and prize Pokémon',l.s,mon);
-  sec('Items, TMs and key items',l.i,n=>{const k=dk(id,'i',n);return tickRow(n,!!S.done[k],()=>{S.done[k]=!S.done[k];save();openLoc(id)})});
+  sec('Items, TMs and key items',[...l.i].sort(itemSort),n=>{const k=dk(id,'i',n);return tickRow(n,!!S.done[k],()=>{S.done[k]=!S.done[k];save();openLoc(id)},CAT_ONE[itemCat(n).cat]?`<br><small class="loc">${CAT_ONE[itemCat(n).cat]}</small>`:'')});
   if(l.b.length)sec('Badges and key battles',l.b,n=>{const k=dk(id,'b',n);return tickRow(n,!!S.done[k],()=>{S.done[k]=!S.done[k];save();openLoc(id)})});
   sBody.scrollTop=keep;
   drawMap();
@@ -1666,7 +1667,47 @@ function drawJournal(){
    PROGRESS VIEW
    ============================================================ */
 // Progress cards open a list: what you have, then what's left, with where to find each
+/* Item categories, each in a sensible order: TMs/HMs by number, Poké Balls by rarity,
+   medicine by strength, key items in roughly the order the story hands them out. */
+const ITEM_ORDER={
+  ball:['Poké Ball','Great Ball','Safari Ball','Ultra Ball','Master Ball'],
+  med:['Potion','Super Potion','Hyper Potion','Max Potion','Full Restore','Antidote','Burn Heal','Ice Heal','Awakening','Parlyz Heal','Full Heal','Revive','Max Revive','Ether','Max Ether','Elixer','Max Elixer','Fresh Water','Soda Pop','Lemonade'],
+  boost:['HP Up','Protein','Iron','Carbos','Calcium','PP Up','Rare Candy'],
+  stone:['Moon Stone','Fire Stone','Water Stone','Thunder Stone','Leaf Stone'],
+  key:["Pokédex","Oak's Parcel",'Town Map','Old Amber','Dome/Helix Fossil','Bike Voucher','Bicycle','S.S. Ticket','Old Rod','Good Rod','Super Rod','Itemfinder','Exp. All','Coin Case','Silph Scope','Poké Flute','Lift Key','Card Key','Gold Teeth','Secret Key']};
+const ITEM_CATS=[['tm','TMs'],['hm','HMs'],['ball','Poké Balls'],['med','Medicine'],['boost','Vitamins and Rare Candy'],['stone','Evolution stones'],['key','Key items'],['other','Other items']];
+function itemCat(n){const base=n.replace(/\s*\(.*\)$/,'');let m;
+  if(m=base.match(/^(TM|HM)(\d\d)/))return {cat:m[1].toLowerCase(),rank:+m[2]};
+  for(const [c,list] of Object.entries(ITEM_ORDER)){const i=list.indexOf(base);if(i>=0)return {cat:c,rank:i}}
+  if(/Ball$/.test(base))return {cat:'ball',rank:99};
+  if(/Stone$/.test(base))return {cat:'stone',rank:99};
+  return {cat:'other',rank:0}}
+const CAT_IDX=Object.fromEntries(ITEM_CATS.map(([c],i)=>[c,i]));
+const CAT_ONE={tm:'TM',hm:'HM',ball:'Poké Ball',med:'Medicine',boost:'Vitamin',stone:'Evolution stone',key:'Key item'};  // label on place pages
+// sort items: category, then the order inside it, then name
+const itemSort=(a,b)=>{const x=itemCat(a),y=itemCat(b);return CAT_IDX[x.cat]-CAT_IDX[y.cat]||x.rank-y.rank||a.localeCompare(b)};
+let itemFilter='all';
+function openItemList(){
+  const rows=[];LOCS.forEach(l=>l.i.forEach(n=>rows.push({l,n,k:dk(l.id,'i',n)})));
+  const b=sheetOpen('Items, TMs and key items'); const keep=b.scrollTop;
+  const bar=document.createElement('div');bar.className='dexbar';
+  [['all','All'],['need','Still to get'],['got','Acquired']].forEach(([k,t])=>{const c=document.createElement('button');c.className='chip';c.textContent=t;
+    c.setAttribute('aria-pressed',String(itemFilter===k));c.onclick=()=>{itemFilter=k;openItemList();sBody.scrollTop=0};bar.appendChild(c)});
+  b.appendChild(bar);
+  let shown=0;
+  ITEM_CATS.forEach(([c,title])=>{
+    const all=rows.filter(r=>itemCat(r.n).cat===c).sort((a,b)=>itemSort(a.n,b.n)||LOCS.indexOf(a.l)-LOCS.indexOf(b.l));
+    if(!all.length)return;
+    const list=all.filter(r=>itemFilter==='all'||(itemFilter==='got')===!!S.done[r.k]);
+    if(!list.length)return;
+    const h=document.createElement('h3');h.textContent=`${title} · ${all.filter(r=>S.done[r.k]).length} / ${all.length}`;b.appendChild(h);
+    list.forEach(r=>{shown++;const row=tickRow(r.n,!!S.done[r.k],()=>{S.done[r.k]=!S.done[r.k];save();openItemList()},`<br><button class="link loc">${r.l.name}</button>`);
+      row.querySelector('.loc').onclick=()=>{tab('map');focusLoc(r.l.id);openLoc(r.l.id)};b.appendChild(row)})});
+  if(!shown){const p=document.createElement('p');p.className='empty';p.textContent=itemFilter==='got'?'None yet.':'All done!';b.appendChild(p)}
+  b.scrollTop=keep;
+}
 function openChecklist(kind){
+  if(kind==='items')return openItemList();
   const T={badges:'Badges',items:'Items, TMs and key items',battles:'Key battles'}[kind];
   const rows=[];
   LOCS.forEach(l=>{
