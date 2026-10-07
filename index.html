@@ -394,6 +394,15 @@ h2.sec,.sheet h3{color:var(--head);text-transform:uppercase;letter-spacing:.06em
 .sheet .body>.dexbar{top:-12px;margin-top:-12px;padding-top:12px;z-index:3}
 .sheet .body>.dexbar{flex-wrap:wrap}
 .dexbar .chip.grp{margin-left:auto}
+.ballr{display:block;font-size:.74rem;font-weight:600;opacity:.85;margin-top:3px;line-height:1.3}
+.ball{display:inline-block;width:.85em;height:.85em;border-radius:50%;margin-right:5px;vertical-align:-1px;box-shadow:0 0 0 1px #0009;
+  background:linear-gradient(var(--bc,#E3352F) 0 44%,#222 44% 56%,#fff 56%)}
+.ball.b-great{--bc:#2F6FEB}.ball.b-ultra{--bc:#2B2B2B;background:linear-gradient(#2B2B2B 0 30%,#F2C230 30% 44%,#222 44% 56%,#fff 56%)}
+.ball.b-safari{--bc:#5E8C3A}.ball.b-master{--bc:#7B3FB5}
+#dexList .row .ballr{font-size:.68rem;margin-top:4px}
+.wrow2{padding:6px 0;border-bottom:1px solid var(--line)}
+.wrow2 .link{display:block;font-weight:700;font-size:.9rem;margin:0 0 2px}
+.wrow2 small{font-size:.78rem;opacity:.8;line-height:1.35}
 .dexbar .chip.grp::before{content:'⌖ '}
 .sheet h3 .maplink{float:right;font-size:.8rem;text-transform:none;letter-spacing:0;margin:0}
 .sheet .row{background:var(--surface)}
@@ -533,7 +542,7 @@ html[data-theme=gameboy].vt{font-size:21px}
 <div class="dex-top">
   <div class="dex-row">
     <div class="lens" aria-hidden="true"></div>
-    <h1>Pokédex<span class="ver">Yellow · v25.0</span></h1>
+    <h1>Pokédex<span class="ver">Yellow · v26.0</span></h1>
     <div class="meter" id="meter" aria-label="Overall completion">0%</div>
   </div>
 </div>
@@ -978,10 +987,12 @@ function openLoc(id){
     r.querySelector('.nm').onclick=()=>openDex(dexNo(n),()=>openLoc(id));
     return r};
   sec('Wild Pokémon',l.w,n=>{const r=mon(n),h=wildHint(id,n);
-    if(h)r.querySelector('.name').insertAdjacentHTML('beforeend',`<br><small class="loc">${h}</small>`);return r});
+    if(h)r.querySelector('.name').insertAdjacentHTML('beforeend',`<br><small class="loc">${h}</small>`);
+    r.querySelector('.name').insertAdjacentHTML('beforeend',ballLine(dexNo(n),id));return r});
   if(Object.values(WILD[id]||{}).some(e=>e.rod||e.surf))sBody.insertAdjacentHTML('beforeend','<p class="hint">Any water also gives Magikarp with the Old Rod, and Goldeen or Poliwag with the Good Rod. The list above shows the Super Rod catches for this place.</p>');
   if(l.s.length)sec('Gift, static and prize Pokémon',l.s,n=>{const r=mon(n),h=MON_WHERE[id+'|'+n];
-    if(h)r.querySelector('.name').insertAdjacentHTML('beforeend',`<br><small class="loc">${h}</small>`);return r});
+    if(h)r.querySelector('.name').insertAdjacentHTML('beforeend',`<br><small class="loc">${h}</small>`);
+    if(STATIC_MON.has(n))r.querySelector('.name').insertAdjacentHTML('beforeend',ballLine(dexNo(n),id));return r});
   sec('Items, TMs and key items',[...l.i].sort(itemSort),n=>{const k=dk(id,'i',n);return tickRow(n,!!S.done[k],()=>{S.done[k]=!S.done[k];save();openLoc(id)},(t=>t?`<br><small class="loc">${t}</small>`:'')([CAT_ONE[itemCat(n).cat],itemWhere(id,n)].filter(Boolean).join(' · ')))});
   if(l.b.length)sec('Badges and key battles',l.b,n=>{const k=dk(id,'b',n);return tickRow(n,!!S.done[k],()=>{S.done[k]=!S.done[k];save();openLoc(id)},battleHint(n))});
   sBody.scrollTop=keep;
@@ -1005,8 +1016,10 @@ function drawDex(){
     const w=WHERE[n], own=ownedOf(i+1).length;
     r.innerHTML=`<span class="num">${String(i+1).padStart(3,'0')}</span>${img(i+1)}<span class="name"><button class="nm">${n}</button> ${MON(i+1).t.map(typeChip).join('')}<span class="where"></span></span>${own?`<span class="own" aria-label="${own} logged">×${own}</span>`:''}<button class="tick" role="checkbox" aria-checked="${got}" aria-label="Caught ${n}">${got?'✓':''}</button>`;
     const wh=r.querySelector('.where');
-    if(w.length) w.forEach(id=>{const a=document.createElement('button');a.className='link';a.textContent=byId[id].name;a.onclick=()=>{tab('map');focusLoc(id);openLoc(id)};wh.appendChild(a)});
+    if(w.length) [...w].sort((x,y)=>bestPct(y,n)-bestPct(x,n)).forEach(id=>{const a=document.createElement('button');a.className='link';const pc=bestPct(id,n);
+      a.textContent=byId[id].name+(pc?` · ${pc}%`:'');a.onclick=()=>{tab('map');focusLoc(id);openLoc(id)};wh.appendChild(a)});
     else wh.textContent='Evolve or trade';
+    if(w.length&&w.some(id=>bestPct(id,n)||STATIC_MON.has(n)))wh.insertAdjacentHTML('afterend',ballLine(i+1,null,true));
     r.querySelector('.nm').onclick=()=>openDex(i+1);
     r.querySelector('.spr').onclick=()=>openDex(i+1);
     r.querySelector('.tick').onclick=()=>{S.caught[n]=!got;save()};
@@ -1023,7 +1036,7 @@ function openDex(n,back=null){
   const self=()=>openDex(n,back);
   const [cat,ht,wt]=m.de;
   let h=`<div class="dexhead"><div class="screen">${img(n,'spr big')}</div><div class="meta">
-    <b>${cat} Pokémon</b><br>${m.t.map(typeChip).join('')}<br>Height ${ht} · Weight ${wt} lb</div></div>
+    <b>${cat} Pokémon</b><br>${m.t.map(typeChip).join('')}<br>Height ${ht} · Weight ${wt} lb${WHERE[name].some(id=>bestPct(id,name)||STATIC_MON.has(name))?'<br>'+ballLine(n):''}</div></div>
     <div class="btns"><button id="dCaught" aria-pressed="${got}">${got?'✓ Caught':'Mark as caught'}</button><button id="dLog">+ Log one I caught</button><button id="dVs">Versus ›</button></div>`;
   // Owned
   const own=ownedOf(n);
@@ -1059,7 +1072,10 @@ function openDex(n,back=null){
   b.querySelector('#dVs').onclick=()=>{vsSel={n,id:null};tab('vs')};
   b.querySelectorAll('.evo button').forEach(x=>x.onclick=()=>openDex(+x.dataset.n,back));
   const wh=b.querySelector('#dWhere');
-  if(WHERE[name].length)WHERE[name].forEach(id=>{const a=document.createElement('button');a.className='link';a.textContent=byId[id].name;a.onclick=()=>{tab('map');focusLoc(id);openLoc(id)};wh.appendChild(a)});
+  if(WHERE[name].length)WHERE[name].forEach(id=>{const d=document.createElement('div');d.className='wrow2';
+    const how=wildHint(id,name)||MON_WHERE[id+'|'+name]||'';
+    d.innerHTML=`<button class="link">${byId[id].name}</button>${how?`<small class="loc">${how}</small>`:''}`;
+    d.querySelector('button').onclick=()=>{tab('map');focusLoc(id);openLoc(id)};wh.appendChild(d)});
   else wh.innerHTML='<p class="empty">Evolve or trade.</p>';
   if(own.length){const o=b.querySelector('#dOwn');own.forEach(pm=>o.appendChild(monCard(pm,self)))}
   drawBest(b.querySelector('#dBest'),n,own);
@@ -1751,6 +1767,25 @@ const battleHint=n=>BATTLE_WHERE[n]?`<br><small class="loc">${BATTLE_WHERE[n]}</
 const HOW={grass:'Grass',cave:'Cave',inside:'Inside',surf:'Surfing',rod:'Super Rod'};
 function wildHint(loc,n){const e=(WILD[loc]||{})[n];if(!e)return '';
   return Object.entries(e).map(([h,[pct,lo,hi,fl]])=>`${HOW[h]}${fl&&fl.length?' '+fl.join(', '):''} · Lv ${lo===hi?lo:lo+'–'+hi} · ${pct<5?'rare, ':''}${pct}%`).join('<br>')}
+/* Catching, using Gen 1's own formula. At low HP (about a third or less) the chance is
+   (catch rate + 1 + status bonus) / (ball range + 1); ball range: Poké 255, Great 200, Ultra and Safari 150.
+   Sleep or freeze adds 25, poison/burn/paralysis 12. (At full HP the Great Ball is actually the weakest.) */
+const BALLS={poke:'Poké Ball',great:'Great Ball',ultra:'Ultra Ball',safari:'Safari Ball',master:'Master Ball'};
+const BALL_RANGE={poke:255,great:200,ultra:150,safari:150};
+const catchOdds=(cr,ball,bonus=0)=>Math.min(1,(cr+1+bonus)/(BALL_RANGE[ball]+1));
+const STATIC_MON=new Set(['Snorlax','Zapdos','Articuno','Moltres','Mewtwo','Electrode']);
+function ballFor(dex,loc){const cr=MON(dex).cr, name=NAME(dex);
+  const wild=WHERE[name].filter(id=>bestPct(id,name)||STATIC_MON.has(name));   // places you actually catch it (not gifts or prizes)
+  const safari=loc==='safari'||(!loc&&wild.length&&wild.every(id=>id==='safari'));
+  if(safari)return {b:'safari',p:catchOdds(cr,'safari'),z:catchOdds(cr,'safari',25)};
+  for(const b of ['poke','great','ultra']){const p=catchOdds(cr,b);if(p>=.5)return {b,p}}
+  return {b:'ultra',p:catchOdds(cr,'ultra'),z:catchOdds(cr,'ultra',25),hard:true,master:cr<=3}}
+// Safari Zone: no battling, so no lowering HP or sleep; the chance is the plain one (bait and rocks change it)
+function ballLine(dex,loc,short){const r=ballFor(dex,loc),pc=x=>Math.round(x*100)+'%';
+  const full=`${BALLS[r.b]} · ${pc(r.p)}`+(r.b==='safari'?' per throw':` at low HP`+(r.z&&r.z>r.p+.04?`, ${pc(r.z)} asleep`:'')+(r.master?' · or the Master Ball':''));
+  return `<span class="ballr" title="${full}"><i class="ball b-${r.b}" aria-hidden="true"></i>${short?`${BALLS[r.b]} · ${pc(r.p)}`:full}</span>`}
+// best chance of meeting a species in one place (any method), or '' if it isn't wild there
+const bestPct=(loc,n)=>{const e=(WILD[loc]||{})[n];return e?Math.max(...Object.values(e).map(v=>v[0])):0};
 const whereCache={};
 function itemWhere(loc,n){const key=loc+'|'+n;if(key in whereCache)return whereCache[key];
   let w=ITEM_WHERE[key]||'';
