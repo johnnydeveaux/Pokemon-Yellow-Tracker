@@ -533,7 +533,7 @@ html[data-theme=gameboy].vt{font-size:21px}
 <div class="dex-top">
   <div class="dex-row">
     <div class="lens" aria-hidden="true"></div>
-    <h1>Pokédex<span class="ver">Yellow · v24.0</span></h1>
+    <h1>Pokédex<span class="ver">Yellow · v25.0</span></h1>
     <div class="meter" id="meter" aria-label="Overall completion">0%</div>
   </div>
 </div>
@@ -591,59 +591,62 @@ const DEX = `Bulbasaur Ivysaur Venusaur Charmander Charmeleon Charizard Squirtle
 
 const L = (id,name,t,x,y,d={}) => ({id,name,t,x,y,w:d.w||[],s:d.s||[],i:d.i||[],b:d.b||[]});
 const LOCS = [
- L('pallet','Pallet Town','town',25,106,{s:['Pikachu'],i:['Pokédex','Town Map']}),
+ L('pallet','Pallet Town','town',25,106,{w:['Staryu','Tentacool'],s:['Pikachu'],i:['Pokédex','Town Map']}),
  L('r1','Route 1','route',25,90,{w:['Pidgey','Rattata'],i:['Potion (clerk)']}),
- L('viridian','Viridian City','town',25,74,{i:["Oak's Parcel",'TM42 Dream Eater','TM27 Fissure'],b:['Earth Badge']}),
- L('r22','Route 22','route',12,74,{w:['Rattata','Spearow','Nidoran♀','Nidoran♂'],b:['Rival (early)']}),
- L('r23','Route 23','route',4,52,{w:['Spearow','Fearow','Ditto']}),
- L('victory','Victory Road','dungeon',4,34,{w:['Machop','Machoke','Geodude','Graveler','Onix','Marowak','Zubat','Golbat'],s:['Moltres'],i:['TM43 Sky Attack','TM47 Explosion','TM05 Mega Kick','Rare Candy']}),
+ L('viridian','Viridian City','town',25,74,{w:['Poliwag'],i:["Oak's Parcel",'TM42 Dream Eater','TM27 Fissure'],b:['Earth Badge']}),
+ L('r22','Route 22','route',12,74,{w:['Nidoran♂','Nidoran♀','Mankey','Spearow','Rattata','Poliwag','Poliwhirl'],b:['Rival (early)']}),
+ L('r23','Route 23','route',4,52,{w:['Nidorino','Nidorina','Mankey','Fearow','Primeape','Poliwag','Poliwhirl']}),
+ L('victory','Victory Road','dungeon',4,34,{w:['Geodude','Zubat','Golbat','Graveler','Onix','Machoke'],s:['Moltres'],i:['TM43 Sky Attack','TM47 Explosion','TM05 Mega Kick','Rare Candy']}),
  L('indigo','Indigo Plateau','town',4,15,{b:['Lorelei','Bruno','Agatha','Lance','Champion']}),
- L('r2','Route 2','route',25,60,{w:['Rattata','Pidgey','Nidoran♀','Nidoran♂'],i:['HM05 Flash','Moon Stone']}),
+ L('r2','Route 2','route',25,60,{w:['Rattata','Pidgey','Nidoran♂','Nidoran♀'],i:['HM05 Flash','Moon Stone']}),
  L('vforest','Viridian Forest','dungeon',25,49,{w:['Caterpie','Metapod','Pidgey','Pidgeotto'],i:['Antidote','Potion','Poké Ball']}),
  L('pewter','Pewter City','town',25,37,{s:['Aerodactyl'],i:['TM34 Bide','Old Amber'],b:['Boulder Badge']}),
- L('r3','Route 3','route',40,37,{w:['Spearow','Jigglypuff','Mankey']}),
- L('mtmoon','Mt. Moon','dungeon',52,30,{w:['Zubat','Geodude','Paras','Clefairy'],s:['Omanyte','Kabuto'],i:['TM12 Water Gun','TM01 Mega Punch','Moon Stone','Rare Candy','HP Up','Escape Rope','Dome/Helix Fossil']}),
- L('r4','Route 4','route',63,37,{w:['Rattata','Spearow','Mankey'],s:['Magikarp'],i:['TM04 Whirlwind']}),
- L('cerulean','Cerulean City','town',76,37,{s:['Bulbasaur'],i:['TM11 BubbleBeam','TM28 Dig','Bicycle'],b:['Cascade Badge','Rival (Cerulean)']}),
- L('r24','Route 24','route',76,23,{w:['Oddish','Bellsprout','Abra','Pidgey','Venonat'],s:['Charmander'],i:['Nugget','TM45 Thunder Wave']}),
- L('r25','Route 25','route',91,14,{w:['Oddish','Bellsprout','Abra','Pidgey','Venonat'],i:['S.S. Ticket','TM19 Seismic Toss']}),
- L('ccave','Cerulean Cave','dungeon',64,23,{w:['Kadabra','Parasect','Rhydon','Ditto','Wigglytuff','Chansey','Magneton','Electrode'],s:['Mewtwo'],i:['Max Revive','Ultra Ball']}),
- L('r9','Route 9','route',91,37,{w:['Rattata','Spearow','Nidoran♀','Nidoran♂'],i:['TM30 Teleport']}),
- L('r10','Route 10','route',104,30,{w:['Voltorb','Magnemite','Spearow']}),
- L('power','Power Plant','dungeon',114,22,{w:['Voltorb','Magnemite','Magneton','Electrode'],s:['Zapdos'],i:['TM25 Thunder','TM33 Reflect']}),
+ L('r3','Route 3','route',40,37,{w:['Spearow','Mankey','Sandshrew','Rattata']}),
+ L('mtmoon','Mt. Moon','dungeon',52,30,{w:['Zubat','Geodude','Paras','Clefairy','Sandshrew'],s:['Omanyte','Kabuto'],i:['TM12 Water Gun','TM01 Mega Punch','Moon Stone','Rare Candy','HP Up','Escape Rope','Dome/Helix Fossil']}),
+ L('r4','Route 4','route',63,37,{w:['Spearow','Mankey','Sandshrew','Rattata','Goldeen','Seaking'],s:['Magikarp'],i:['TM04 Whirlwind']}),
+ L('cerulean','Cerulean City','town',76,37,{w:['Goldeen','Seaking'],s:['Bulbasaur'],i:['TM11 BubbleBeam','TM28 Dig','Bicycle'],b:['Cascade Badge','Rival (Cerulean)']}),
+ L('r24','Route 24','route',76,23,{w:['Oddish','Bellsprout','Pidgey','Venonat','Pidgeotto','Goldeen','Seaking'],s:['Charmander'],i:['Nugget','TM45 Thunder Wave']}),
+ L('r25','Route 25','route',91,14,{w:['Oddish','Bellsprout','Pidgey','Venonat','Pidgeotto','Krabby','Kingler'],i:['S.S. Ticket','TM19 Seismic Toss']}),
+ L('ccave','Cerulean Cave','dungeon',64,23,{w:['Golbat','Graveler','Ditto','Gloom','Weepinbell','Sandslash','Rhyhorn','Rhydon','Venomoth','Parasect','Chansey','Lickitung','Seaking','Goldeen'],s:['Mewtwo'],i:['Max Revive','Ultra Ball']}),
+ L('r9','Route 9','route',91,37,{w:['Nidoran♂','Nidoran♀','Rattata','Spearow','Nidorino','Nidorina','Raticate','Fearow'],i:['TM30 Teleport']}),
+ L('r10','Route 10','route',104,30,{w:['Magnemite','Rattata','Nidoran♂','Nidoran♀','Raticate','Machop','Krabby','Horsea','Kingler']}),
+ L('power','Power Plant','dungeon',114,22,{w:['Magnemite','Magneton','Voltorb','Grimer','Muk'],s:['Electrode','Zapdos'],i:['TM25 Thunder','TM33 Reflect']}),
  L('rtunnel','Rock Tunnel','dungeon',104,44,{w:['Zubat','Geodude','Machop','Onix']}),
- L('r5','Route 5','route',76,49,{w:['Pidgey','Oddish','Bellsprout','Mankey'],i:['Day Care']}),
+ L('r5','Route 5','route',76,49,{w:['Pidgey','Rattata','Abra','Jigglypuff','Pidgeotto'],i:['Day Care']}),
  L('saffron','Saffron City','town',76,61,{s:['Lapras','Hitmonlee','Hitmonchan'],i:['Master Ball','Card Key','TM46 Psywave','TM29 Psychic'],b:['Marsh Badge','Silph Co. (Giovanni)','Rival (Silph Co.)']}),
- L('r6','Route 6','route',76,73,{w:['Pidgey','Oddish','Bellsprout','Mankey']}),
- L('vermilion','Vermilion City','town',76,86,{s:['Squirtle'],i:['TM24 Thunderbolt','Bike Voucher','Old Rod'],b:['Thunder Badge']}),
+ L('r6','Route 6','route',76,73,{w:['Pidgey','Rattata','Abra','Jigglypuff','Pidgeotto','Psyduck','Golduck','Goldeen']}),
+ L('vermilion','Vermilion City','town',76,86,{w:['Tentacool','Horsea','Staryu','Shellder'],s:['Squirtle'],i:['TM24 Thunderbolt','Bike Voucher','Old Rod'],b:['Thunder Badge']}),
  L('ssanne','S.S. Anne','dungeon',76,98,{i:['HM01 Cut','TM08 Body Slam','TM44 Rest'],b:['Rival (S.S. Anne)']}),
- L('r11','Route 11','route',91,86,{w:['Spearow','Drowzee'],i:['Itemfinder']}),
+ L('r11','Route 11','route',91,86,{w:['Pidgey','Rattata','Drowzee','Pidgeotto','Raticate','Tentacool','Horsea'],i:['Itemfinder']}),
  L('diglett','Diglett\u2019s Cave','dungeon',86,76,{w:['Diglett','Dugtrio']}),
- L('r12','Route 12','route',104,78,{w:['Oddish','Bellsprout','Venonat','Pidgeotto'],s:['Snorlax'],i:['Super Rod','TM16 Pay Day']}),
+ L('r12','Route 12','route',104,78,{w:['Oddish','Bellsprout','Pidgey','Pidgeotto','Gloom','Weepinbell',"Farfetch'd",'Slowpoke','Slowbro','Horsea','Seadra'],s:['Snorlax'],i:['Super Rod','TM16 Pay Day']}),
  L('lavender','Lavender Town','town',104,61,{i:['Poké Flute']}),
  L('tower','Pokémon Tower','dungeon',115,61,{w:['Gastly','Haunter','Cubone'],b:['Rival (Tower)','Ghost Marowak']}),
- L('r8','Route 8','route',91,61,{w:['Pidgey','Vulpix','Growlithe','Jigglypuff']}),
- L('r7','Route 7','route',63,61,{w:['Pidgey','Vulpix','Growlithe','Jigglypuff']}),
- L('celadon','Celadon City','town',49,61,{s:['Eevee','Abra','Vulpix','Wigglytuff','Scyther','Pinsir','Porygon'],i:['TM21 Mega Drain','TM13 Ice Beam','TM48 Rock Slide','TM49 Tri Attack','Silph Scope','Lift Key','Coin Case'],b:['Rainbow Badge','Rocket Hideout (Giovanni)']}),
- L('r16','Route 16','route',36,61,{w:['Spearow','Doduo','Rattata'],s:['Snorlax'],i:['HM02 Fly']}),
- L('r17','Route 17','route',36,84,{w:['Spearow','Fearow','Doduo','Raticate']}),
- L('r18','Route 18','route',44,108,{w:['Spearow','Fearow','Doduo']}),
- L('fuchsia','Fuchsia City','town',58,108,{i:['TM06 Toxic','Good Rod'],b:['Soul Badge']}),
- L('safari','Safari Zone','dungeon',58,96,{w:['Nidoran♀','Nidoran♂','Nidorino','Nidorina','Rhyhorn','Exeggcute','Chansey','Kangaskhan','Tauros','Venonat','Parasect','Dratini'],i:['HM03 Surf','HM04 Strength','Gold Teeth','TM40 Skull Bash','TM32 Double Team']}),
- L('r15','Route 15','route',72,108,{w:['Oddish','Bellsprout','Venonat','Pidgeotto','Ditto'],i:['Exp. All']}),
- L('r14','Route 14','route',88,104,{w:['Oddish','Bellsprout','Venonat','Pidgeotto','Ditto']}),
- L('r13','Route 13','route',102,95,{w:['Oddish','Bellsprout','Venonat','Pidgeotto','Ditto']}),
- L('r19','Route 19','route',58,122,{w:['Tentacool']}),
- L('seafoam','Seafoam Islands','dungeon',44,128,{w:['Seel','Dewgong','Psyduck','Slowpoke','Zubat','Shellder'],s:['Articuno']}),
- L('r20','Route 20','route',34,128,{w:['Tentacool']}),
- L('cinnabar','Cinnabar Island','town',25,128,{w:['Rattata','Raticate','Grimer','Muk','Ponyta','Growlithe'],s:['Omanyte','Kabuto','Aerodactyl'],i:['TM38 Fire Blast','Secret Key'],b:['Volcano Badge']}),
- L('r21','Route 21','route',25,118,{w:['Tangela','Pidgey','Rattata','Tentacool']}),
+ L('r8','Route 8','route',91,61,{w:['Pidgey','Abra','Rattata','Pidgeotto','Jigglypuff','Kadabra']}),
+ L('r7','Route 7','route',63,61,{w:['Pidgey','Abra','Rattata','Jigglypuff','Pidgeotto']}),
+ L('celadon','Celadon City','town',49,61,{w:['Goldeen'],s:['Eevee','Abra','Vulpix','Wigglytuff','Scyther','Pinsir','Porygon'],i:['TM21 Mega Drain','TM13 Ice Beam','TM48 Rock Slide','TM49 Tri Attack','Silph Scope','Lift Key','Coin Case'],b:['Rainbow Badge','Rocket Hideout (Giovanni)']}),
+ L('r16','Route 16','route',36,61,{w:['Doduo','Spearow','Rattata','Fearow','Raticate'],s:['Snorlax'],i:['HM02 Fly']}),
+ L('r17','Route 17','route',36,84,{w:['Doduo','Fearow','Ponyta','Dodrio','Tentacool','Shellder']}),
+ L('r18','Route 18','route',44,108,{w:['Doduo','Spearow','Rattata','Fearow','Raticate','Shellder','Tentacool']}),
+ L('fuchsia','Fuchsia City','town',58,108,{w:['Magikarp','Gyarados'],i:['TM06 Toxic','Good Rod'],b:['Soul Badge']}),
+ L('safari','Safari Zone','dungeon',58,96,{w:['Nidoran♂','Nidoran♀','Exeggcute','Parasect','Kangaskhan','Rhyhorn','Nidorino','Tauros','Nidorina','Cubone','Paras','Marowak','Tangela','Chansey','Scyther','Pinsir','Magikarp','Dratini','Dragonair'],i:['HM03 Surf','HM04 Strength','Gold Teeth','TM40 Skull Bash','TM32 Double Team']}),
+ L('r15','Route 15','route',72,108,{w:['Oddish','Bellsprout','Venonat','Pidgeotto','Gloom','Weepinbell','Venomoth'],i:['Exp. All']}),
+ L('r14','Route 14','route',88,104,{w:['Oddish','Bellsprout','Venonat','Pidgeotto','Gloom','Weepinbell','Venomoth']}),
+ L('r13','Route 13','route',102,95,{w:['Oddish','Bellsprout','Pidgeotto','Pidgey','Gloom','Weepinbell',"Farfetch'd",'Slowpoke','Slowbro','Horsea','Tentacool','Seadra']}),
+ L('r19','Route 19','route',58,122,{w:['Tentacool','Staryu','Tentacruel']}),
+ L('seafoam','Seafoam Islands','dungeon',44,128,{w:['Zubat','Krabby','Golbat','Kingler','Seel','Slowpoke','Dewgong','Slowbro','Tentacool','Staryu'],s:['Articuno']}),
+ L('r20','Route 20','route',34,128,{w:['Tentacool','Tentacruel','Staryu']}),
+ L('cinnabar','Cinnabar Island','town',25,128,{w:['Raticate','Grimer','Rattata','Growlithe','Ditto','Muk','Staryu','Tentacool'],s:['Omanyte','Kabuto','Aerodactyl'],i:['TM38 Fire Blast','Secret Key'],b:['Volcano Badge']}),
+ L('r21','Route 21','route',25,118,{w:['Pidgey','Rattata','Pidgeotto','Raticate','Tentacool','Staryu','Tentacruel']}),
 ];
 const EDGES = 'pallet-r1 r1-viridian viridian-r22 r22-r23 r23-victory victory-indigo viridian-r2 r2-vforest vforest-pewter pewter-r3 r3-mtmoon mtmoon-r4 r4-cerulean cerulean-r24 r24-r25 cerulean-ccave cerulean-r9 r9-r10 r10-power r10-rtunnel rtunnel-lavender cerulean-r5 r5-saffron saffron-r6 r6-vermilion vermilion-ssanne vermilion-r11 r11-diglett r11-r12 r12-lavender lavender-tower lavender-r8 r8-saffron saffron-r7 r7-celadon celadon-r16 r16-r17 r17-r18 r18-fuchsia fuchsia-safari fuchsia-r15 r15-r14 r14-r13 r13-r12 fuchsia-r19 r19-seafoam seafoam-r20 r20-cinnabar cinnabar-r21 r21-pallet'.split(' ').map(e=>e.split('-'));
 
 /* ============================================================
    STATE — saved on device; falls back to memory if unavailable
    ============================================================ */
+/* Wild encounters from Pokémon Yellow's own tables (pokeyellow data/wild): per place and species,
+   {method: [chance %, min level, max level, [floors]]}. Super Rod = 4 equally likely catches. */
+const WILD={"ccave":{"Golbat":{"cave":[40,50,59,["1F","2F","B1F"]]},"Graveler":{"cave":[15,45,55,["1F","2F","B1F"]]},"Gloom":{"cave":[10,55,58,["1F","2F"]]},"Weepinbell":{"cave":[10,55,58,["1F","2F"]]},"Sandslash":{"cave":[10,52,56,["1F","2F"]]},"Venomoth":{"cave":[5,54,54,["1F"]]},"Parasect":{"cave":[5,54,54,["1F"]]},"Ditto":{"cave":[15,55,65,["1F","2F","B1F"]]},"Rhyhorn":{"cave":[10,50,52,["2F","B1F"]]},"Rhydon":{"cave":[10,58,62,["2F","B1F"]]},"Chansey":{"cave":[5,56,56,["B1F"]]},"Lickitung":{"cave":[5,50,55,["B1F"]]},"Goldeen":{"rod":[25,25,30,["1F","B1F"]]},"Seaking":{"rod":[75,35,60,["1F","B1F"]]}},"diglett":{"Diglett":{"cave":[95,15,22,[]]},"Dugtrio":{"cave":[5,29,31,[]]}},"mtmoon":{"Zubat":{"cave":[74,6,13,["1F","B1F","B2F"]]},"Geodude":{"cave":[20,10,11,["1F","B1F","B2F"]]},"Sandshrew":{"cave":[4,12,12,["1F"]]},"Clefairy":{"cave":[11,9,13,["1F","B1F","B2F"]]},"Paras":{"cave":[15,9,13,["B1F","B2F"]]}},"cinnabar":{"Rattata":{"inside":[30,34,43,["Mansion 1F","Mansion 2F","Mansion 3F"]]},"Raticate":{"inside":[40,34,46,["Mansion 1F","Mansion 2F","Mansion 3F","Mansion B1F"]]},"Grimer":{"inside":[40,23,38,["Mansion 1F","Mansion 2F","Mansion 3F","Mansion B1F"]]},"Growlithe":{"inside":[20,26,38,["Mansion 1F"]]},"Muk":{"inside":[10,35,41,["Mansion 2F","Mansion 3F","Mansion B1F"]]},"Ditto":{"inside":[11,12,24,["Mansion B1F"]]},"Staryu":{"rod":[50,10,15,[]]},"Tentacool":{"rod":[50,15,30,[]]}},"tower":{"Gastly":{"inside":[95,18,29,["3F","4F","5F","6F","7F"]]},"Haunter":{"inside":[5,20,29,["3F","4F","5F","6F","7F"]]},"Cubone":{"inside":[5,20,24,["5F","6F","7F"]]}},"power":{"Magnemite":{"inside":[40,30,35,[]]},"Magneton":{"inside":[20,33,38,[]]},"Voltorb":{"inside":[20,33,37,[]]},"Grimer":{"inside":[15,33,37,[]]},"Muk":{"inside":[5,33,37,[]]}},"rtunnel":{"Zubat":{"cave":[50,15,22,["1F","B1F"]]},"Geodude":{"cave":[39,16,21,["1F","B1F"]]},"Machop":{"cave":[20,17,21,["1F","B1F"]]},"Onix":{"cave":[11,14,22,["B1F"]]}},"r1":{"Pidgey":{"grass":[70,2,7,[]]},"Rattata":{"grass":[30,2,4,[]]}},"r10":{"Magnemite":{"grass":[50,16,22,[]]},"Rattata":{"grass":[20,18,18,[]]},"Nidoran♂":{"grass":[10,17,17,[]]},"Nidoran♀":{"grass":[10,17,17,[]]},"Raticate":{"grass":[5,20,20,[]]},"Machop":{"grass":[5,16,18,[]]},"Krabby":{"rod":[50,15,20,[]]},"Horsea":{"rod":[25,10,10,[]]},"Kingler":{"rod":[25,25,25,[]]}},"r11":{"Pidgey":{"grass":[35,16,18,[]]},"Rattata":{"grass":[30,15,17,[]]},"Drowzee":{"grass":[24,15,19,[]]},"Pidgeotto":{"grass":[10,18,20,[]]},"Raticate":{"grass":[1,17,17,[]]},"Tentacool":{"rod":[75,10,20,[]]},"Horsea":{"rod":[25,5,5,[]]}},"r12":{"Oddish":{"grass":[30,25,27,[]]},"Bellsprout":{"grass":[30,25,27,[]]},"Pidgey":{"grass":[15,28,28,[]]},"Pidgeotto":{"grass":[10,28,28,[]]},"Gloom":{"grass":[5,29,29,[]]},"Weepinbell":{"grass":[5,29,29,[]]},"Farfetch'd":{"grass":[5,26,31,[]]},"Slowpoke":{"surf":[95,15,15,[]]},"Slowbro":{"surf":[5,15,20,[]]},"Horsea":{"rod":[50,20,25,[]]},"Seadra":{"rod":[50,25,35,[]]}},"r13":{"Oddish":{"grass":[30,25,27,[]]},"Bellsprout":{"grass":[30,25,27,[]]},"Pidgeotto":{"grass":[15,28,28,[]]},"Pidgey":{"grass":[10,28,28,[]]},"Gloom":{"grass":[5,29,29,[]]},"Weepinbell":{"grass":[5,29,29,[]]},"Farfetch'd":{"grass":[5,26,31,[]]},"Slowpoke":{"surf":[95,15,15,[]]},"Slowbro":{"surf":[5,15,20,[]]},"Horsea":{"rod":[50,15,20,[]]},"Tentacool":{"rod":[25,10,10,[]]},"Seadra":{"rod":[25,20,20,[]]}},"r14":{"Oddish":{"grass":[30,26,28,[]]},"Bellsprout":{"grass":[30,26,28,[]]},"Venonat":{"grass":[20,24,27,[]]},"Pidgeotto":{"grass":[10,30,30,[]]},"Gloom":{"grass":[5,30,30,[]]},"Weepinbell":{"grass":[5,30,30,[]]},"Venomoth":{"grass":[1,30,30,[]]}},"r15":{"Oddish":{"grass":[30,26,28,[]]},"Bellsprout":{"grass":[30,26,28,[]]},"Venonat":{"grass":[20,24,27,[]]},"Pidgeotto":{"grass":[10,32,32,[]]},"Gloom":{"grass":[5,30,30,[]]},"Weepinbell":{"grass":[5,30,30,[]]},"Venomoth":{"grass":[1,30,30,[]]}},"r16":{"Spearow":{"grass":[25,22,23,[]]},"Doduo":{"grass":[39,22,26,[]]},"Rattata":{"grass":[25,23,24,[]]},"Fearow":{"grass":[5,24,24,[]]},"Raticate":{"grass":[5,25,26,[]]}},"r17":{"Doduo":{"grass":[50,26,28,[]]},"Fearow":{"grass":[25,27,29,[]]},"Ponyta":{"grass":[24,28,32,[]]},"Dodrio":{"grass":[1,29,29,[]]},"Tentacool":{"rod":[50,5,15,[]]},"Shellder":{"rod":[50,25,35,[]]}},"r18":{"Spearow":{"grass":[25,22,23,[]]},"Doduo":{"grass":[39,22,26,[]]},"Rattata":{"grass":[25,23,24,[]]},"Fearow":{"grass":[5,24,24,[]]},"Raticate":{"grass":[5,25,26,[]]},"Tentacool":{"rod":[25,15,15,[]]},"Shellder":{"rod":[75,20,40,[]]}},"r19":{"Tentacool":{"surf":[100,5,40,[]],"rod":[50,15,30,[]]},"Staryu":{"rod":[25,20,20,[]]},"Tentacruel":{"rod":[25,30,30,[]]}},"r2":{"Rattata":{"grass":[35,3,4,[]]},"Pidgey":{"grass":[35,3,7,[]]},"Nidoran♂":{"grass":[15,4,6,[]]},"Nidoran♀":{"grass":[15,4,6,[]]}},"r20":{"Tentacool":{"surf":[100,5,40,[]],"rod":[25,20,20,[]]},"Tentacruel":{"rod":[50,20,40,[]]},"Staryu":{"rod":[25,30,30,[]]}},"r21":{"Pidgey":{"grass":[55,11,17,[]]},"Rattata":{"grass":[30,13,15,[]]},"Raticate":{"grass":[5,15,15,[]]},"Pidgeotto":{"grass":[11,15,19,[]]},"Tentacool":{"surf":[100,5,40,[]],"rod":[50,15,30,[]]},"Staryu":{"rod":[25,20,20,[]]},"Tentacruel":{"rod":[25,30,30,[]]}},"r22":{"Nidoran♂":{"grass":[30,2,4,[]]},"Nidoran♀":{"grass":[30,2,4,[]]},"Mankey":{"grass":[20,3,5,[]]},"Rattata":{"grass":[10,3,3,[]]},"Spearow":{"grass":[11,2,6,[]]},"Poliwag":{"rod":[75,5,15,[]]},"Poliwhirl":{"rod":[25,15,15,[]]}},"r23":{"Nidorino":{"grass":[30,41,44,[]]},"Nidorina":{"grass":[30,41,44,[]]},"Mankey":{"grass":[20,36,41,[]]},"Fearow":{"grass":[15,40,45,[]]},"Primeape":{"grass":[5,41,46,[]]},"Poliwag":{"rod":[50,25,30,[]]},"Poliwhirl":{"rod":[50,30,40,[]]}},"r24":{"Oddish":{"grass":[30,12,14,[]]},"Bellsprout":{"grass":[30,12,14,[]]},"Pidgey":{"grass":[29,13,17,[]]},"Venonat":{"grass":[10,13,16,[]]},"Pidgeotto":{"grass":[1,17,17,[]]},"Goldeen":{"rod":[75,20,30,[]]},"Seaking":{"rod":[25,30,30,[]]}},"r25":{"Oddish":{"grass":[30,12,14,[]]},"Bellsprout":{"grass":[30,12,14,[]]},"Pidgey":{"grass":[29,13,17,[]]},"Venonat":{"grass":[10,13,16,[]]},"Pidgeotto":{"grass":[1,17,17,[]]},"Krabby":{"rod":[50,10,15,[]]},"Kingler":{"rod":[50,15,25,[]]}},"r3":{"Spearow":{"grass":[55,8,12,[]]},"Mankey":{"grass":[15,9,9,[]]},"Sandshrew":{"grass":[15,8,10,[]]},"Rattata":{"grass":[15,10,12,[]]}},"r4":{"Spearow":{"grass":[55,8,12,[]]},"Mankey":{"grass":[15,9,9,[]]},"Sandshrew":{"grass":[15,8,10,[]]},"Rattata":{"grass":[15,10,12,[]]},"Goldeen":{"rod":[75,20,30,[]]},"Seaking":{"rod":[25,30,30,[]]}},"r5":{"Pidgey":{"grass":[39,15,17,[]]},"Rattata":{"grass":[30,14,16,[]]},"Abra":{"grass":[15,7,7,[]]},"Pidgeotto":{"grass":[5,17,17,[]]},"Jigglypuff":{"grass":[11,3,7,[]]}},"r6":{"Pidgey":{"grass":[39,15,17,[]]},"Rattata":{"grass":[30,14,16,[]]},"Abra":{"grass":[15,7,7,[]]},"Pidgeotto":{"grass":[5,17,17,[]]},"Jigglypuff":{"grass":[11,3,7,[]]},"Psyduck":{"surf":[95,15,15,[]]},"Golduck":{"surf":[5,15,20,[]]},"Goldeen":{"rod":[100,5,20,[]]}},"r7":{"Pidgey":{"grass":[40,20,22,[]]},"Rattata":{"grass":[15,20,20,[]]},"Abra":{"grass":[25,15,26,[]]},"Pidgeotto":{"grass":[10,24,24,[]]},"Jigglypuff":{"grass":[11,19,24,[]]}},"r8":{"Pidgey":{"grass":[40,20,22,[]]},"Rattata":{"grass":[15,20,20,[]]},"Abra":{"grass":[20,15,19,[]]},"Pidgeotto":{"grass":[10,24,24,[]]},"Jigglypuff":{"grass":[10,19,24,[]]},"Kadabra":{"grass":[5,20,27,[]]}},"r9":{"Nidoran♂":{"grass":[30,16,18,[]]},"Nidoran♀":{"grass":[30,16,18,[]]},"Rattata":{"grass":[15,18,18,[]]},"Spearow":{"grass":[10,17,17,[]]},"Nidorino":{"grass":[5,18,18,[]]},"Nidorina":{"grass":[5,18,18,[]]},"Raticate":{"grass":[4,20,20,[]]},"Fearow":{"grass":[1,19,19,[]]}},"safari":{"Nidoran♂":{"grass":[20,14,36,["Center","East","North","West"]]},"Nidoran♀":{"grass":[20,14,36,["Center","East","North","West"]]},"Exeggcute":{"grass":[20,20,26,["Center","East","North","West"]]},"Rhyhorn":{"grass":[10,20,25,["Center","North"]]},"Nidorino":{"grass":[10,23,32,["Center","West"]]},"Parasect":{"grass":[15,27,32,["Center"]]},"Paras":{"grass":[5,27,27,["Center"]]},"Tangela":{"grass":[4,22,27,["Center","West"]]},"Chansey":{"grass":[4,7,21,["Center","East"]]},"Tauros":{"grass":[10,21,21,["East","West"]]},"Nidorina":{"grass":[10,23,32,["East","North"]]},"Cubone":{"grass":[10,16,19,["East","North","West"]]},"Marowak":{"grass":[5,24,24,["East","West"]]},"Scyther":{"grass":[4,15,25,["East","North"]]},"Kangaskhan":{"grass":[15,28,33,["North"]]},"Pinsir":{"grass":[4,15,25,["North","West"]]},"Magikarp":{"rod":[75,5,15,["Center","East","North","West"]]},"Dratini":{"rod":[25,10,15,["Center","East","North","West"]]},"Dragonair":{"rod":[25,15,15,["Center"]]}},"seafoam":{"Zubat":{"cave":[45,9,45,["1F","B1F","B2F","B3F","B4F"]]},"Krabby":{"cave":[35,25,31,["1F","B1F","B2F","B3F","B4F"]],"rod":[25,25,25,["B3F","B4F"]]},"Slowpoke":{"cave":[15,28,31,["1F","B1F","B2F"]]},"Golbat":{"cave":[25,27,36,["1F","B1F","B2F","B3F","B4F"]]},"Kingler":{"cave":[10,28,32,["B1F","B2F","B3F","B4F"]],"rod":[25,35,35,["B3F","B4F"]]},"Seel":{"cave":[20,22,32,["B1F","B2F","B3F","B4F"]]},"Slowbro":{"cave":[1,31,31,["B2F"]]},"Dewgong":{"cave":[5,28,34,["B3F","B4F"]]},"Tentacool":{"surf":[70,20,40,["B3F","B4F"]]},"Staryu":{"surf":[30,30,30,["B3F","B4F"]],"rod":[50,20,40,["B3F","B4F"]]}},"victory":{"Geodude":{"cave":[65,26,46,["1F","2F","3F"]]},"Zubat":{"cave":[20,39,44,["1F","2F"]]},"Onix":{"cave":[10,43,49,["1F","2F","3F"]]},"Graveler":{"cave":[15,41,47,["1F","2F","3F"]]},"Golbat":{"cave":[20,39,44,["2F","3F"]]},"Machoke":{"cave":[10,39,45,["2F","3F"]]}},"vforest":{"Caterpie":{"grass":[50,3,6,[]]},"Metapod":{"grass":[25,4,6,[]]},"Pidgey":{"grass":[24,4,8,[]]},"Pidgeotto":{"grass":[1,9,9,[]]}},"pallet":{"Staryu":{"rod":[50,5,10,[]]},"Tentacool":{"rod":[50,10,20,[]]}},"viridian":{"Poliwag":{"rod":[100,5,15,[]]}},"cerulean":{"Goldeen":{"rod":[50,25,30,[]]},"Seaking":{"rod":[50,30,40,[]]}},"vermilion":{"Tentacool":{"rod":[75,10,20,["Dock"]]},"Horsea":{"rod":[25,5,5,[]]},"Staryu":{"rod":[25,15,15,["Dock"]]},"Shellder":{"rod":[25,10,10,["Dock"]]}},"celadon":{"Goldeen":{"rod":[100,5,20,[]]}},"fuchsia":{"Magikarp":{"rod":[75,5,15,[]]},"Gyarados":{"rod":[25,15,15,[]]}}};
 const KEY='kanto-yellow-v1';
 let mem=null;
 const store={
@@ -974,7 +977,9 @@ function openLoc(id){
     r.querySelector('.tick').onclick=()=>{S.caught[n]=!S.caught[n];save();openLoc(id)};
     r.querySelector('.nm').onclick=()=>openDex(dexNo(n),()=>openLoc(id));
     return r};
-  sec('Wild Pokémon',l.w,mon);
+  sec('Wild Pokémon',l.w,n=>{const r=mon(n),h=wildHint(id,n);
+    if(h)r.querySelector('.name').insertAdjacentHTML('beforeend',`<br><small class="loc">${h}</small>`);return r});
+  if(Object.values(WILD[id]||{}).some(e=>e.rod||e.surf))sBody.insertAdjacentHTML('beforeend','<p class="hint">Any water also gives Magikarp with the Old Rod, and Goldeen or Poliwag with the Good Rod. The list above shows the Super Rod catches for this place.</p>');
   if(l.s.length)sec('Gift, static and prize Pokémon',l.s,n=>{const r=mon(n),h=MON_WHERE[id+'|'+n];
     if(h)r.querySelector('.name').insertAdjacentHTML('beforeend',`<br><small class="loc">${h}</small>`);return r});
   sec('Items, TMs and key items',[...l.i].sort(itemSort),n=>{const k=dk(id,'i',n);return tickRow(n,!!S.done[k],()=>{S.done[k]=!S.done[k];save();openLoc(id)},(t=>t?`<br><small class="loc">${t}</small>`:'')([CAT_ONE[itemCat(n).cat],itemWhere(id,n)].filter(Boolean).join(' · ')))});
@@ -1728,7 +1733,7 @@ const MON_WHERE={
   "pewter|Aerodactyl":"Old Amber from the Museum: revive it at the Cinnabar Lab",
   "cinnabar|Omanyte":"Cinnabar Lab: revives the Helix Fossil","cinnabar|Kabuto":"Cinnabar Lab: revives the Dome Fossil","cinnabar|Aerodactyl":"Cinnabar Lab: revives the Old Amber",
   "r12|Snorlax":"Asleep on the route: wake it with the Poké Flute (Lv 30)","r16|Snorlax":"Asleep on the route: wake it with the Poké Flute (Lv 30)",
-  "power|Zapdos":"Deep inside the Power Plant (Lv 50, only one)","seafoam|Articuno":"Seafoam Islands B4F (Lv 50, only one)",
+  "power|Zapdos":"Deep inside the Power Plant (Lv 50, only one)","power|Electrode":"Two of the item balls are really Electrode (Lv 43): save first","seafoam|Articuno":"Seafoam Islands B4F (Lv 50, only one)",
   "victory|Moltres":"Victory Road 2F (Lv 50, only one)","ccave|Mewtwo":"Cerulean Cave B1F, after the Hall of Fame (Lv 70)"};
 const BATTLE_WHERE={
   'Boulder Badge':'Brock, Pewter Gym (Rock)','Cascade Badge':'Misty, Cerulean Gym (Water)','Thunder Badge':'Lt. Surge, Vermilion Gym (Electric)',
@@ -1742,6 +1747,10 @@ const BATTLE_WHERE={
   'Lorelei':'Elite Four, 1st (Ice)','Bruno':'Elite Four, 2nd (Fighting)','Agatha':'Elite Four, 3rd (Ghost)','Lance':'Elite Four, 4th (Dragon)',
   'Champion':'Your rival, right after the Elite Four'};
 const battleHint=n=>BATTLE_WHERE[n]?`<br><small class="loc">${BATTLE_WHERE[n]}</small>`:'';
+// "Grass · Lv 26–31 · 5%", "Cave B1F, B2F · …", "Surfing · …", "Super Rod · …"
+const HOW={grass:'Grass',cave:'Cave',inside:'Inside',surf:'Surfing',rod:'Super Rod'};
+function wildHint(loc,n){const e=(WILD[loc]||{})[n];if(!e)return '';
+  return Object.entries(e).map(([h,[pct,lo,hi,fl]])=>`${HOW[h]}${fl&&fl.length?' '+fl.join(', '):''} · Lv ${lo===hi?lo:lo+'–'+hi} · ${pct<5?'rare, ':''}${pct}%`).join('<br>')}
 const whereCache={};
 function itemWhere(loc,n){const key=loc+'|'+n;if(key in whereCache)return whereCache[key];
   let w=ITEM_WHERE[key]||'';
@@ -1828,7 +1837,7 @@ function drawProg(){
    <div class="btns"><button id="sprGet">Download all sprites</button></div></div>`+
   `<div class="stat"><h3><span>Backup</span></h3><p class="note">Progress is saved on this device. Copy a backup code before clearing Safari data or switching phones.</p>
    <div class="btns"><button id="exp">Copy backup code</button><button id="imp">Restore from code</button><button id="rst">Reset all progress</button></div></div>
-   <div class="stat"><h3><span>About the data</span></h3><p class="note">Encounter tables and item lists are a best-effort guide and may have gaps or mistakes. Everything lives in the DATA block at the top of index.html, so you can correct or extend it. Pokédex stats, types, move lists and TM/HM compatibility come from Pokémon Yellow's own data tables (dex-data.js). Sprites are the Game Boy Yellow sprites from the PokeAPI sprites project. The place maps are simplified plans drawn from the game's own map layouts (maps-data.js, made by build_maps.py).</p></div>`;
+   <div class="stat"><h3><span>About the data</span></h3><p class="note">Wild Pokémon, levels and encounter chances come from Pokémon Yellow\'s own encounter tables (grass, caves, surfing and the Super Rod). Item lists are a best-effort guide and may have gaps or mistakes. Everything lives in the DATA block at the top of index.html, so you can correct or extend it. Pokédex stats, types, move lists and TM/HM compatibility come from Pokémon Yellow's own data tables (dex-data.js). Sprites are the Game Boy Yellow sprites from the PokeAPI sprites project. The place maps are simplified plans drawn from the game's own map layouts (maps-data.js, made by build_maps.py).</p></div>`;
   document.getElementById('sync').onclick=importSave;
   el.querySelectorAll('button.stat').forEach(x=>x.onclick=()=>x.dataset.k==='dex'?(dexFilter='got',tab('dex')):openChecklist(x.dataset.k));
   spriteCount().then(n=>{const o=document.getElementById('sprN');if(o&&n!=null)o.textContent=`${n} / 151`});
