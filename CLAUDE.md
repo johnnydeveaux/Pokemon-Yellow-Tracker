@@ -19,7 +19,7 @@
 
 - Pokédex-style design: red header with the lens, "POKÉDEX" and "Yellow · vN.0"
   under it, and the completion meter; search bar and tabs in a red panel at the
-  bottom (thumb reach). Tabs: Journey, Map, Pokédex, Party, Battle, Progress, Settings.
+  bottom (thumb reach). Tabs: Journey, Map, Pokédex, Party, Battle, Items, Progress, Settings.
 - The game name in the header is there on purpose: a game switcher (Red, Blue, …)
   is planned later, and that line will show the selected game. For now everything
   is Pokémon Yellow only.
