@@ -557,7 +557,7 @@ html[data-theme=gameboy].vt{font-size:21px}
 <div class="dex-top">
   <div class="dex-row">
     <div class="lens" aria-hidden="true"></div>
-    <h1>Pokédex<span class="ver">Yellow · v28.0</span></h1>
+    <h1>Pokédex<span class="ver">Yellow · v29.0</span></h1>
     <div class="meter" id="meter" aria-label="Overall completion">0%</div>
   </div>
 </div>
@@ -933,7 +933,8 @@ function lmDescribe(m,x,y){
   const out=[];
   const w=m.wp.find(p=>p[0]===x&&p[1]===y);
   if(w){const d=w[2]>=0?LM[w[2]]:null;
-    if(!d)out.push({t:'Door · back outside',go:()=>lmGo(m.loc,LMBYLOC[m.loc][0])});
+    if(!d){const o=lmOutside(m);   // "back to where you came in": the map whose door leads here
+      out.push(o?{t:`Door · back outside to ${o.n}`,go:()=>lmGo(o.loc||m.loc,o.i)}:{t:'Door · back outside'})}
     else out.push({t:d.loc===m.loc?`Leads to ${lmShort(d,m.loc)}`:`Door → ${d.n}`,go:()=>lmGo(d.loc||m.loc,d.i)})}
   m.hi.filter(p=>p[0]===x&&p[1]===y).forEach(p=>out.push({t:`Hidden item: ${p[2]}${hexBit((S.prog||{}).hid,p[3])?' · found ✓':' · use the Itemfinder, or press A facing this spot'}`}));
   m.o.filter(o=>o[0]===x&&o[1]===y).forEach(o=>{const done=lmObjDone(o,m);
@@ -946,6 +947,8 @@ function lmDescribe(m,x,y){
   if(!out.length)out.push({t:{'.':'Path',g:'Tall grass · wild Pokémon live here',w:'Water · Surf to cross',t:'Trees',k:'Small tree · clear it with Cut',r:'Rock',b:'Building',f:'Fence post',x:'Wall',v:'Ledge · jump down only',l:'Ledge · jump left only',e:'Ledge · jump right only'}[ch]||''});
   return out;
 }
+function lmOutside(m){const from=LM.filter(k=>k!==m&&k.wp.some(w=>w[2]===m.i));
+  return from.find(k=>!k.wp.every(w=>w[2]<0))&&from.sort((a,b)=>(a.wp.some(w=>w[2]<0))-(b.wp.some(w=>w[2]<0)))[0]||from[0]||null}
 function lmGo(loc,mi){if(loc!==sel){(lmState[loc]||={}).m=mi;openLoc(loc);return}(lmState[loc]||={}).m=mi;lmState[loc].scroll=null;lmRender()}
 function lmRender(){
   const box=document.getElementById('lmap');if(!box||!sel)return;
