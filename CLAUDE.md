@@ -14,6 +14,9 @@
 - Bump the service worker cache name in `sw.js` (`const VERSION = 'kanto-yellow-vN';`)
   so installed copies of the app pick up the update.
 - Commit message format: `N.0: short description of what's new`.
+- A push that doesn't change the app (e.g. re-publishing because a GitHub Pages deploy
+  got stuck, or a CLAUDE.md-only change) keeps the current version number: don't bump
+  the header or `sw.js`. To re-trigger a stuck deploy, push such a no-change commit.
 
 ## App layout (since 17.0)
 
