@@ -6,6 +6,10 @@
   to feature branches (including session-assigned `claude/...` branches), and
   do not open pull requests, unless explicitly asked.
 
+- Before committing any change, send the user a screenshot of it (Playwright,
+  phone-sized viewport) and wait for their confirmation. Don't commit or push
+  until they confirm.
+
 ## Releasing a new version
 
 - Every push of a new version gets the next whole number: v18.0, then v19.0, v20.0, …
