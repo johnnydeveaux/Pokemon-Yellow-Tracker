@@ -394,6 +394,7 @@ h2.sec,.sheet h3{color:var(--head);text-transform:uppercase;letter-spacing:.06em
 .sheet .body>.dexbar{top:-12px;margin-top:-12px;padding-top:12px;z-index:3}
 .sheet .body>.dexbar{flex-wrap:wrap}
 .dexbar .chip.grp{margin-left:auto}
+.sheet .body>.dexbar.mvbar,.mvbar{position:static;margin:0;padding:2px 0 8px;background:none;flex-wrap:wrap}
 .bagbar{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;margin:0 -14px;padding-left:14px;padding-right:14px}
 .bagbar::-webkit-scrollbar{display:none}
 .bagbar .chip{flex:none;white-space:nowrap}
@@ -557,7 +558,7 @@ html[data-theme=gameboy].vt{font-size:21px}
 <div class="dex-top">
   <div class="dex-row">
     <div class="lens" aria-hidden="true"></div>
-    <h1>Pokédex<span class="ver">Yellow · v30.0</span></h1>
+    <h1>Pokédex<span class="ver">Yellow · v31.0</span></h1>
     <div class="meter" id="meter" aria-label="Overall completion">0%</div>
   </div>
 </div>
@@ -1050,6 +1051,17 @@ function drawDex(){
 /* ============================================================
    POKÉDEX DETAIL
    ============================================================ */
+/* Level-up moves. A move a Pokémon knows from Lv 1 and also learns again later (Dugtrio's Dig:
+   it keeps Diglett's list) is one row: "1, 19". Sort by level, or by power either way. */
+let mvSort='lv';
+function drawMoves(box,m){
+  const at={};[...m.l1.map(id=>[1,id]),...m.lv].forEach(([l,id])=>{(at[id]||=[]).includes(l)||at[id].push(l)});
+  let rows=Object.entries(at).map(([id,ls])=>({id:+id,ls,pw:MV(+id)[2]>1?MV(+id)[2]:0}));
+  const byLv=(a,b)=>a.ls[0]-b.ls[0];
+  if(mvSort==='lv')rows.sort(byLv);
+  else rows.sort((a,b)=>mvSort==='strong'?(b.pw-a.pw)||byLv(a,b):((a.pw||999)-(b.pw||999))||byLv(a,b));
+  box.innerHTML=`<table class="mv"><tr><th>Lv</th><th>Move</th><th>Type</th><th>Power</th><th>Acc</th><th>PP</th></tr>${rows.map(r=>{const [mn,ty,pw,ac,pp]=MV(r.id);
+    return `<tr><td>${r.ls.join(', ')}</td><td>${mn}</td><td>${typeChip(ty)}</td><td>${pw>1?pw:'—'}</td><td>${ac}%</td><td>${pp}</td></tr>`}).join('')}</table>`}
 function openDex(n,back=null){
   const m=MON(n), name=NAME(n), got=!!S.caught[name];
   const b=sheetOpen(`#${String(n).padStart(3,'0')} ${name}`,back); b.scrollTop=0;
@@ -1082,11 +1094,12 @@ function openDex(n,back=null){
   // Where
   h+=`<h3>Where to find</h3><div id="dWhere"></div>`;
   // Level-up moves
-  const lvl=[...m.l1.map(id=>[1,id]),...m.lv];
-  const row=([l,id])=>{const [mn,ty,pw,ac,pp]=MV(id);return `<tr><td>${l}</td><td>${mn}</td><td>${typeChip(ty)}</td><td>${pw>1?pw:'—'}</td><td>${ac}%</td><td>${pp}</td></tr>`};
-  h+=`<h3>Moves learned by level</h3><table class="mv"><tr><th>Lv</th><th>Move</th><th>Type</th><th>Pow</th><th>Acc</th><th>PP</th></tr>${lvl.map(row).join('')}</table>`;
+  h+=`<h3>Moves learned by level</h3><div class="dexbar mvbar">${[['lv','By level'],['strong','Strongest first'],['weak','Weakest first']].map(([k,t])=>`<button class="chip" data-s="${k}" aria-pressed="${mvSort===k}">${t}</button>`).join('')}</div><div id="dMoves"></div>
+    <p class="hint">Power = how much damage the move does (— means it does no direct damage, like Growl). Acc = how often it hits. PP = how many times you can use it before resting.</p>`;
   h+=`<h3>TMs and HMs it can learn (${m.tm.length})</h3>`+(m.tm.length?`<div class="tms">${m.tm.map(k=>`<span><b>${tmName(k)}</b>${MV(D.TM[k-1])[0]}</span>`).join('')}</div>`:`<p class="empty">None.</p>`);
   b.innerHTML=h;
+  const mvBox=b.querySelector('#dMoves');drawMoves(mvBox,m);
+  b.querySelectorAll('.mvbar .chip').forEach(c=>c.onclick=()=>{mvSort=c.dataset.s;b.querySelectorAll('.mvbar .chip').forEach(x=>x.setAttribute('aria-pressed',String(x===c)));drawMoves(mvBox,m)});
   b.querySelector('#dCaught').onclick=()=>{S.caught[name]=!got;save();self()};
   b.querySelector('#dLog').onclick=()=>openEdit(null,n,self);
   b.querySelector('#dVs').onclick=()=>{vsSel={n,id:null};tab('vs')};
