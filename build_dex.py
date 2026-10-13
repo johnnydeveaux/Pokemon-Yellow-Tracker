@@ -74,14 +74,18 @@ order = re.findall(r'^\s*db (DEX_\w+|0)', rd('data/pokemon/dex_order.asm'), re.M
 INT2DEX = [0] + [0 if d == '0' else dexno[norm(d[4:])] for d in order]
 ITEMS = [tc(n.replace('é', 'e')) for n in re.findall(r'^\s*li "([^"]+)"', rd('data/items/names.asm'), re.M)]
 def const_values(src):
+    # const_def / const_skip / const_next can take expressions such as "$F0 - 2"
+    num = lambda e: eval(re.sub(r'\$([0-9A-Fa-f]+)', lambda m: str(int(m.group(1), 16)), e), {})
     v, out = 0, {}
     for line in src.splitlines():
-        t = line.split(';')[0].split()
-        if not t: continue
-        if t[0] == 'const_def': v = int(t[1].replace('$', '0x'), 0) if len(t) > 1 else 0
-        elif t[0] == 'const': out[t[1]] = v; v += 1
-        elif t[0] == 'const_skip': v += int(t[1]) if len(t) > 1 else 1
-        elif t[0] == 'const_next': v = int(t[1].replace('$', '0x'), 0)
+        s = line.split(';')[0].strip()
+        if not s: continue
+        t, _, arg = s.partition(' ')
+        arg = arg.strip()
+        if t == 'const_def': v = num(arg) if arg else 0
+        elif t == 'const': out[arg.split()[0]] = v; v += 1
+        elif t == 'const_skip': v += num(arg) if arg else 1
+        elif t == 'const_next': v = num(arg)
     return out
 EVC = const_values(rd('constants/event_constants.asm'))
 EVENTS = {k[6:]: v for k, v in EVC.items() if k.startswith('EVENT_') and not re.fullmatch(r'EVENT_[0-9A-F]{3}', k)}
