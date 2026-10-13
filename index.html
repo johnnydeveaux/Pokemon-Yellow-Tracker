@@ -562,7 +562,7 @@ html[data-theme=gameboy].vt{font-size:21px}
 <div class="dex-top">
   <div class="dex-row">
     <div class="lens" aria-hidden="true"></div>
-    <h1>Pokédex<span class="ver">Yellow · v32.0</span></h1>
+    <h1>Pokédex<span class="ver">Yellow · v33.0</span></h1>
     <div class="meter" id="meter" aria-label="Overall completion">0%</div>
   </div>
 </div>
@@ -1112,7 +1112,7 @@ function openDex(n,back=null){
   const mvBox=b.querySelector('#dMoves');drawMoves(mvBox,m);
   const tmBox=b.querySelector('#dTms');if(tmBox){drawTms(tmBox,m);
     b.querySelectorAll('.tmbar .chip').forEach(c=>c.onclick=()=>{tmSort=c.dataset.s;b.querySelectorAll('.tmbar .chip').forEach(x=>x.setAttribute('aria-pressed',String(x===c)));drawTms(tmBox,m)})}
-  b.querySelectorAll('.mvbar .chip').forEach(c=>c.onclick=()=>{mvSort=c.dataset.s;b.querySelectorAll('.mvbar .chip').forEach(x=>x.setAttribute('aria-pressed',String(x===c)));drawMoves(mvBox,m)});
+  b.querySelectorAll('.mvbar:not(.tmbar) .chip').forEach(c=>c.onclick=()=>{mvSort=c.dataset.s;b.querySelectorAll('.mvbar:not(.tmbar) .chip').forEach(x=>x.setAttribute('aria-pressed',String(x===c)));drawMoves(mvBox,m)});
   b.querySelector('#dCaught').onclick=()=>{S.caught[name]=!got;save();self()};
   b.querySelector('#dLog').onclick=()=>openEdit(null,n,self);
   b.querySelector('#dVs').onclick=()=>{vsSel={n,id:null};tab('vs')};
