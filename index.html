@@ -395,6 +395,7 @@ h2.sec,.sheet h3{color:var(--head);text-transform:uppercase;letter-spacing:.06em
 .sheet .body>.dexbar{flex-wrap:wrap}
 .dexbar .chip.grp{margin-left:auto}
 table.tmt{font-size:.8rem}
+.tmbar{gap:5px;flex-wrap:nowrap!important}.tmbar .chip{padding-left:9px;padding-right:9px;flex:none}
 table.tmt td,table.tmt th{padding-left:3px;padding-right:3px}
 table.tmt td:first-child{white-space:nowrap;font-weight:800;opacity:.85}
 table.tmt .mine{color:var(--tick-on,var(--fill));font-size:.75rem}
@@ -562,7 +563,7 @@ html[data-theme=gameboy].vt{font-size:21px}
 <div class="dex-top">
   <div class="dex-row">
     <div class="lens" aria-hidden="true"></div>
-    <h1>Pokédex<span class="ver">Yellow · v33.0</span></h1>
+    <h1>Pokédex<span class="ver">Yellow · v34.0</span></h1>
     <div class="meter" id="meter" aria-label="Overall completion">0%</div>
   </div>
 </div>
@@ -1066,11 +1067,13 @@ function drawMoves(box,m){
   else rows.sort((a,b)=>mvSort==='strong'?(b.pw-a.pw)||byLv(a,b):((a.pw||999)-(b.pw||999))||byLv(a,b));
   box.innerHTML=`<table class="mv"><tr><th>Lv</th><th>Move</th><th>Type</th><th>Power</th><th>Acc</th><th>PP</th></tr>${rows.map(r=>{const [mn,ty,pw,ac,pp]=MV(r.id);
     return `<tr><td>${r.ls.join(', ')}</td><td>${mn}</td><td>${typeChip(ty)}</td><td>${pw>1?pw:'—'}</td><td>${ac}%</td><td>${pp}</td></tr>`}).join('')}</table>`}
-// TMs/HMs a Pokémon can learn: TM number order (HMs after), or by power; ✓ = in your bag
+// TMs/HMs a Pokémon can learn: TM number order (HMs after), or by strength, type, power, accuracy or PP; ✓ = in your bag
 let tmSort='num';
 function drawTms(box,m){const have=new Set(((S.prog||{}).items)||[]);
-  let rows=[...m.tm].sort((a,b)=>a-b).map(k=>({k,id:D.TM[k-1],pw:MV(D.TM[k-1])[2]>1?MV(D.TM[k-1])[2]:0}));
-  if(tmSort!=='num')rows.sort((a,b)=>tmSort==='strong'?(b.pw-a.pw)||a.k-b.k:((a.pw||999)-(b.pw||999))||a.k-b.k);
+  let rows=[...m.tm].sort((a,b)=>a-b).map(k=>{const [,ty,p,ac,pp]=MV(D.TM[k-1]);return {k,id:D.TM[k-1],ty,ac,pp,pw:p>1?p:0}});
+  const byPw=(a,b)=>b.pw-a.pw;
+  const cmp={strong:byPw,pow:byPw,type:(a,b)=>a.ty.localeCompare(b.ty)||byPw(a,b),acc:(a,b)=>b.ac-a.ac,pp:(a,b)=>b.pp-a.pp}[tmSort];
+  if(cmp)rows.sort((a,b)=>cmp(a,b)||a.k-b.k);
   box.innerHTML=`<table class="mv tmt"><tr><th>TM</th><th>Move</th><th>Type</th><th>Power</th><th>Acc</th><th>PP</th></tr>${rows.map(r=>{const [mn,ty,pw,ac,pp]=MV(r.id),code=tmName(r.k);
     return `<tr><td>${code}${have.has(nrm(code))?' <span class="mine" title="In your bag">✓</span>':''}</td><td>${mn}</td><td>${typeChip(ty)}</td><td>${pw>1?pw:'—'}</td><td>${ac}%</td><td>${pp}</td></tr>`}).join('')}</table>`}
 function openDex(n,back=null){
@@ -1107,7 +1110,7 @@ function openDex(n,back=null){
   // Level-up moves
   h+=`<h3>Moves learned by level</h3><div class="dexbar mvbar">${[['lv','By level'],['strong','Strongest first'],['weak','Weakest first']].map(([k,t])=>`<button class="chip" data-s="${k}" aria-pressed="${mvSort===k}">${t}</button>`).join('')}</div><div id="dMoves"></div>
     <p class="hint">Power = how much damage the move does (— means it does no direct damage, like Growl). Acc = how often it hits. PP = how many times you can use it before resting.</p>`;
-  h+=`<h3>TMs and HMs it can learn (${m.tm.length})</h3>`+(m.tm.length?`<div class="dexbar mvbar tmbar">${[['num','By number'],['strong','Strongest first'],['weak','Weakest first']].map(([k,t])=>`<button class="chip" data-s="${k}" aria-pressed="${tmSort===k}">${t}</button>`).join('')}</div><div id="dTms"></div>`:`<p class="empty">None.</p>`);
+  h+=`<h3>TMs and HMs it can learn (${m.tm.length})</h3>`+(m.tm.length?`<div class="dexbar mvbar tmbar">${[['num','#'],['strong','Strength'],['type','Type'],['pow','Power'],['acc','Acc'],['pp','PP']].map(([k,t])=>`<button class="chip" data-s="${k}" aria-pressed="${tmSort===k}">${t}</button>`).join('')}</div><div id="dTms"></div>`:`<p class="empty">None.</p>`);
   b.innerHTML=h;
   const mvBox=b.querySelector('#dMoves');drawMoves(mvBox,m);
   const tmBox=b.querySelector('#dTms');if(tmBox){drawTms(tmBox,m);
